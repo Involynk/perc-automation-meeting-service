@@ -1,21 +1,17 @@
 {
-  "name": "perc",
+  "name": "perc-meeting-service",
   "version": "1.0.0",
   "private": true,
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
-    "build:shared": "npx tsc -p packages/shared/tsconfig.json",
-    "build:all": "npm run build:shared && npm run build --workspaces",
-    "start:api": "nest start api-gateway",
-    "start:workflow": "nest start workflow-service",
-    "start:comm": "nest start communication-service",
-    "dev": "npm run build:shared && nest start api-gateway",
-    "dev:all": "npm run build:shared && (nest start api-gateway & nest start workflow-service & nest start communication-service & wait)",
-    "test": "npm run test --workspaces",
-    "test:mock": "npx ts-node packages/mock-orchestrator/src/run.ts",
-    "lint": "npm run lint --workspaces"
+    "build:shared": "node node_modules/typescript/bin/tsc -p packages/shared/tsconfig.json",
+    "build": "npm run build:shared && node node_modules/@nestjs/cli/bin/nest.js build meeting-service",
+    "start": "node node_modules/@nestjs/cli/bin/nest.js start meeting-service",
+    "start:prod": "node dist/packages/meeting-service/src/main",
+    "dev": "npm run build:shared && node node_modules/@nestjs/cli/bin/nest.js start meeting-service --watch",
+    "test": "node node_modules/jest/bin/jest.js --passWithNoTests"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.24",
@@ -33,15 +29,8 @@
     "@nestjs/core": "^11.1.28",
     "@nestjs/event-emitter": "^3.1.0",
     "@nestjs/platform-express": "^11.1.28",
-    "@nestjs/schedule": "^6.1.3",
-    "@nestjs/typeorm": "^11.0.3",
     "@supabase/supabase-js": "^2.110.8",
-    "@types/nodemailer": "^8.0.1",
-    "axios": "^1.18.1",
-    "nodemailer": "^9.0.3",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.2",
-    "sql.js": "^1.14.1",
-    "typeorm": "^1.1.0"
+    "rxjs": "^7.8.2"
   }
 }

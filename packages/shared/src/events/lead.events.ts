@@ -1,3 +1,12 @@
+export interface ConversationMessage {
+  id: string;
+  direction: string;
+  content_type: string;
+  content: string;
+  sent_at: string;
+  channel_message_id?: string;
+}
+
 export class LeadCapturedEvent {
   constructor(
     public readonly leadId: string,
@@ -13,6 +22,8 @@ export class LeadCapturedEvent {
     public readonly branchId?: string,
     public readonly counselorId?: string,
     public readonly confidence?: number,
+    public readonly isNewLead: boolean = true,
+    public readonly conversationHistory: ConversationMessage[] = [],
   ) {}
 }
 

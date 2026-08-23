@@ -1,0 +1,54 @@
+# SERVICE_CONNECTIONS.yaml — meeting-service
+# Format mirrors the master SERVICE_CONNECTIONS_MAP.yaml at the repo root.
+
+service: meeting-service
+description: >
+  Appointment and scheduling engine. Creates meeting records, generates video conference
+  links (Zoom/Google Meet/Calendly), and tracks meeting lifecycle state
+  (SCHEDULED → COMPLETED | NO_SHOW | CANCELLED | RESCHEDULED).
+  Does NOT terminate the follow-up loop — post-meeting follow-ups continue for
+  feedback collection and further nurturing.
+
+subscribes_to:
+  - topic: perc.meeting.create-requested
+    from_service: followup-service
+    filter: none
+    action: >
+      Creates a new meeting record in PostgreSQL (meetings table), generates a video conference
+      link, assigns an organizer, and emits meeting.booked. The entire booking operation is atomic.
+
+produces:
+  - topic: perc.meeting-events
+    event: meeting.booked
+    kafka_key: leadId
+    payload_schema:
+      eventId: string
+      meetingId: string         # PostgreSQL meeting record UUID
+      leadId: string
+      organizerId: string       # Assigned admin / sales rep user ID
+      meetingLink: string       # Video conference URL (Zoom / Google Meet)
+      scheduledAt: string       # ISO 8601 — meeting start datetime
+      durationMinutes: number   # Default: 30
+      status: "SCHEDULED"
+    subscribers:
+      - service: response-service
+        filter: none
+        action: "Sends WhatsApp confirmation to lead with meetingLink and scheduledAt"
+      - service: scheduler-service
+        filter: "event === 'meeting.booked'"
+        action: "Schedules pre-meeting reminder timer (scheduledAt - MEETING_REMINDER_LEAD_TIME_MS) tagged for notification-service"
+      - service: scheduler-service
+        filter: "event === 'meeting.completed'"
+        action: "Schedules post-meeting feedback timer (now + POST_MEETING_FEEDBACK_DELAY_MS) tagged for followup-service"
+      - service: notification-service
+        filter: none
+        action: "Sends email/push notification to Admin (organizerId) and Lead about the booking"
+      - service: workflow-service
+        filter: none
+        action: "Transitions lead pipeline status to MEETING_SCHEDULED"
+      - service: timeline-service
+        filter: none
+        action: "Logs MEETING_BOOKED audit entry in lead's journey timeline"
+      - service: analytics-service
+        filter: none
+        action: "Records meeting conversion rate and booking attribution metrics"
