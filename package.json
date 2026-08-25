@@ -14,16 +14,13 @@
     "test": "node node_modules/jest/bin/jest.js --passWithNoTests"
   },
   "devDependencies": {
-    "@nestjs/cli": "^11.0.24",
     "@nestjs/testing": "^11.1.28",
     "@types/express": "^5.0.6",
     "@types/node": "^26.1.1",
-    "jest": "^30.4.2",
-    "ts-jest": "^29.4.12",
-    "ts-node": "^10.9.2",
-    "typescript": "~5.7.0"
+    "jest": "^30.4.2"
   },
   "dependencies": {
+    "@nestjs/cli": "^11.0.24",
     "@nestjs/common": "^11.1.28",
     "@nestjs/config": "^4.0.4",
     "@nestjs/core": "^11.1.28",
@@ -31,6 +28,9 @@
     "@nestjs/platform-express": "^11.1.28",
     "@supabase/supabase-js": "^2.110.8",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.2"
+    "rxjs": "^7.8.2",
+    "ts-jest": "^29.4.12",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.7.0"
   }
 }
